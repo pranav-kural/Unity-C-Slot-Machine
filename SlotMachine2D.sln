@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotMachine2D", "SlotMachine2D.csproj", "{6F6B51D2-2E09-98AC-E8EC-360C3A7943AB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6F6B51D2-2E09-98AC-E8EC-360C3A7943AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F6B51D2-2E09-98AC-E8EC-360C3A7943AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F6B51D2-2E09-98AC-E8EC-360C3A7943AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F6B51D2-2E09-98AC-E8EC-360C3A7943AB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
