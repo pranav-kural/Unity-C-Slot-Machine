@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -113,7 +114,8 @@ public class SlotMachine : MonoBehaviour {
 	{
 		playerMoney += winnings;
 		Debug.Log("You Won: $" + winnings);
-		resetFruitTally();
+        GameObject.Find("WinAmount").GetComponent<Text>().text = "$" + winnings;
+        resetFruitTally();
 		checkJackPot();
 	}
 
