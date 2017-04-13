@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -14,6 +15,9 @@ public class SlotMachine : MonoBehaviour {
     void OnGUI()
     {
         _PictureBoxes();
+
+        GameObject.Find("TotalCredits").GetComponent<Text>().text = "$" + playerMoney;
+        GameObject.Find("BetAmount").GetComponent<Text>().text = "$" + playerBet;
     }
 
     void _PictureBoxes()
@@ -33,7 +37,7 @@ public class SlotMachine : MonoBehaviour {
 	private int winnings = 0;
 	private int jackpot = 5000;
 	private float turn = 0.0f;
-	private int playerBet = 0;
+	private int playerBet = 10;
 	private float winNumber = 0.0f;
 	private float lossNumber = 0.0f;
 	private string[] spinResult;
@@ -95,36 +99,42 @@ public class SlotMachine : MonoBehaviour {
         Debug.Log("Resetted all values");
 	}
 
-	/* Check to see if the player won the jackpot */
-	private void checkJackPot()
-	{
-		/* compare two random values */
-		var jackPotTry = Random.Range (1, 51);
-		var jackPotWin = Random.Range (1, 51);
-		if (jackPotTry == jackPotWin)
-		{
-			Debug.Log("You Won the $" + jackpot + " Jackpot!!");
-			playerMoney += jackpot;
-			jackpot = 1000;
-		}
-	}
 
 	/* Utility function to show a win message and increase player money */
 	private void showWinMessage()
 	{
 		playerMoney += winnings;
-		Debug.Log("You Won: $" + winnings);
+        EditorUtility.DisplayDialog("Won!", "You Won: $" + winnings, "OK");
+        Debug.Log("You Won: $" + winnings);
         GameObject.Find("WinAmount").GetComponent<Text>().text = "$" + winnings;
         resetFruitTally();
-		checkJackPot();
-	}
+
+        /* Check to see if the player won the jackpot */
+
+        /* compare two random values */
+        var jackPotTry = Random.Range(1, 51);
+        var jackPotWin = Random.Range(1, 51);
+        if (jackPotTry == jackPotWin)
+        {
+            EditorUtility.DisplayDialog("Jackpot!", "You Won the $" + jackpot + " Jackpot!!", "OK");
+            Debug.Log("You Won the $" + jackpot + " Jackpot!!");
+            playerMoney += jackpot;
+            jackpot = 1000;
+            GameObject.Find("WinAmount").GetComponent<Text>().text = "$" + winnings + jackpot;
+        } else
+        {
+            GameObject.Find("WinAmount").GetComponent<Text>().text = "$" + winnings;
+        }
+    }
 
 	/* Utility function to show a loss message and reduce player money */
 	private void showLossMessage()
 	{
 		playerMoney -= playerBet;
-		Debug.Log("You Lost!");
-		resetFruitTally();
+        EditorUtility.DisplayDialog("You Lost!", "You lost this time. Better luck next time.", "OK");
+        Debug.Log("You Lost!");
+        GameObject.Find("WinAmount").GetComponent<Text>().text = "$0";
+        resetFruitTally();
 	}
 
 	/* Utility function to check if a value falls within a range of bounds */
@@ -265,25 +275,23 @@ public class SlotMachine : MonoBehaviour {
 
 	public void OnSpinButtonClick()
 	{
-		playerBet = 10; // default bet amount
 
 		if (playerMoney == 0)
 		{
-			/*
-			if (Debug.Log("You ran out of Money! \nDo you want to play again?","Out of Money!",MessageBoxButtons.YesNo) == DialogResult.Yes)
-			{
-				resetAll();
-				showPlayerStats();
-			}
-			*/
-		}
+            if (EditorUtility.DisplayDialog("Out of Money", "You ran out of Money! Do you want to play again?", "Yes", "No"))
+            {
+                resetAll();
+                showPlayerStats();
+            }
+            
+        }
 		else if (playerBet > playerMoney)
 		{
-			Debug.Log("You don't have enough Money to place that bet.");
+            EditorUtility.DisplayDialog("Not Enough Money","You don't have enough Money to place that bet.", "OK");
 		}
 		else if (playerBet < 0)
 		{
-			Debug.Log("All bets must be a positive $ amount.");
+            EditorUtility.DisplayDialog("Invalid Bet Amount","All bets must be a positive $ amount.", "OK");
 		}
 		else if (playerBet <= playerMoney)
 		{
@@ -296,12 +304,22 @@ public class SlotMachine : MonoBehaviour {
 		}
 		else
 		{
-			Debug.Log("Please enter a valid bet amount");
+            EditorUtility.DisplayDialog("Invalid Bet Amount","Please enter a valid bet amount", "OK");
 		}
 	}
 
     public void Bet(int betAmount)
     {
+        // bet amount logic
+        if (betAmount > 0)
+        {
+            this.playerBet = betAmount;
+        }
+    }
 
+    public void QuitGame()
+    {
+        // Quit the application
+        Application.Quit();
     }
 }
