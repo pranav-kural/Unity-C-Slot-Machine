@@ -80,7 +80,7 @@ public class SlotMachine : MonoBehaviour {
 	}
 
 	/* Utility function to reset the player stats */
-	private void resetAll()
+	public void resetAll()
 	{
 		playerMoney = 1000;
 		winnings = 0;
@@ -90,6 +90,8 @@ public class SlotMachine : MonoBehaviour {
 		winNumber = 0;
 		lossNumber = 0;
 		winRatio = 0.0f;
+        resetFruitTally();
+        Debug.Log("Resetted all values");
 	}
 
 	/* Check to see if the player won the jackpot */
