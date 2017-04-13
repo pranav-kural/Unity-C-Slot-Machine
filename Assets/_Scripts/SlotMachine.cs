@@ -1,14 +1,34 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class SlotMachine : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+       
+    }
 	
-	}
-	
-	private int playerMoney = 1000;
+    // adding components on formation of GUI
+    void OnGUI()
+    {
+        _PictureBoxes();
+    }
+
+    void _PictureBoxes()
+    {
+        // First box
+        GUI.Box(new Rect(Screen.width - 740, Screen.height - 400, 125, 105), Resources.Load((fruitsToDisplay[0] == null) ? "banana" : fruitsToDisplay[0]) as Texture2D);
+
+        // Second box
+        GUI.Box(new Rect(Screen.width - 575, Screen.height - 400, 125, 105), Resources.Load((fruitsToDisplay[1] == null) ? "cherry" : fruitsToDisplay[1]) as Texture2D);
+
+        // Third box ( Right most)
+        GUI.Box(new Rect(Screen.width - 410, Screen.height - 400, 125, 105), Resources.Load((fruitsToDisplay[2] == null) ? "grapes" : fruitsToDisplay[2]) as Texture2D);
+    }
+
+    string[] fruitsToDisplay = new string[3];
+    private int playerMoney = 1000;
 	private int winnings = 0;
 	private int jackpot = 5000;
 	private float turn = 0.0f;
@@ -28,8 +48,7 @@ public class SlotMachine : MonoBehaviour {
 	private int sevens = 0;
 	private int blanks = 0;
 
-
-
+    private Dictionary<string, int> _ScoreList = new Dictionary<string, int>();
 
 	/* Utility function to show Player Stats */
 	private void showPlayerStats()
@@ -156,6 +175,7 @@ public class SlotMachine : MonoBehaviour {
 			}
 
 		}
+        this.fruitsToDisplay = betLine;
 		return betLine;
 	}
 
