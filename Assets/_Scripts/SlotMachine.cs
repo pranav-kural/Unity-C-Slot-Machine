@@ -299,4 +299,9 @@ public class SlotMachine : MonoBehaviour {
 			Debug.Log("Please enter a valid bet amount");
 		}
 	}
+
+    public void Bet(int betAmount)
+    {
+
+    }
 }
