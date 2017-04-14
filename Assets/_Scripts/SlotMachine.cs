@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEditor;
 using System.Collections;
+
 using System.Collections.Generic;
 
 public class SlotMachine : MonoBehaviour {
@@ -18,7 +19,11 @@ public class SlotMachine : MonoBehaviour {
 
         GameObject.Find("TotalCredits").GetComponent<Text>().text = "$" + playerMoney;
         GameObject.Find("BetAmount").GetComponent<Text>().text = "$" + playerBet;
+
+        
     }
+
+ 
 
     void _PictureBoxes()
     {
@@ -52,6 +57,7 @@ public class SlotMachine : MonoBehaviour {
 	private int bells = 0;
 	private int sevens = 0;
 	private int blanks = 0;
+    
 
     private Dictionary<string, int> _ScoreList = new Dictionary<string, int>();
 
@@ -91,11 +97,13 @@ public class SlotMachine : MonoBehaviour {
 		winnings = 0;
 		jackpot = 5000;
 		turn = 0;
-		playerBet = 0;
+		playerBet = 10; // default amount
 		winNumber = 0;
 		lossNumber = 0;
 		winRatio = 0.0f;
         resetFruitTally();
+		GameObject.Find("SpinResult").GetComponent<Text>().text = "      Spin It!";
+        GameObject.Find("WinAmount").GetComponent<Text>().text = "";
         Debug.Log("Resetted all values");
 	}
 
@@ -104,7 +112,7 @@ public class SlotMachine : MonoBehaviour {
 	private void showWinMessage()
 	{
 		playerMoney += winnings;
-        EditorUtility.DisplayDialog("Won!", "You Won: $" + winnings, "OK");
+        GameObject.Find("SpinResult").GetComponent<Text>().text = "You Won: $" + winnings;
         Debug.Log("You Won: $" + winnings);
         GameObject.Find("WinAmount").GetComponent<Text>().text = "$" + winnings;
         resetFruitTally();
@@ -125,16 +133,22 @@ public class SlotMachine : MonoBehaviour {
         {
             GameObject.Find("WinAmount").GetComponent<Text>().text = "$" + winnings;
         }
-    }
+        
+        // Play the winning sound effect
+        GameObject.Find("WinAudio").GetComponent<AudioSource>().Play();
+}
 
 	/* Utility function to show a loss message and reduce player money */
 	private void showLossMessage()
 	{
 		playerMoney -= playerBet;
-        EditorUtility.DisplayDialog("You Lost!", "You lost this time. Better luck next time.", "OK");
+        GameObject.Find("SpinResult").GetComponent<Text>().text = "      You Lost!";
         Debug.Log("You Lost!");
         GameObject.Find("WinAmount").GetComponent<Text>().text = "$0";
         resetFruitTally();
+
+        // Play the loosing sound effect
+        GameObject.Find("LossAudio").GetComponent<AudioSource>().Play();
 	}
 
 	/* Utility function to check if a value falls within a range of bounds */
@@ -149,41 +163,40 @@ public class SlotMachine : MonoBehaviour {
 	private string[] Reels()
 	{
 		string[] betLine = { " ", " ", " " };
-		int[] outCome = { 0, 0, 0 };
 
 		for (var spin = 0; spin < 3; spin++)
 		{
-			outCome[spin] = Random.Range(1,65);
+			int randomNumber = Random.Range(1,65);
 
-			if (checkRange(outCome[spin], 1, 27)) {  // 41.5% probability
+			if (checkRange(randomNumber, 1, 27)) {  // 41.5% probability
 				betLine[spin] = "blank";
 				blanks++;
 			}
-			else if (checkRange(outCome[spin], 28, 37)){ // 15.4% probability
+			else if (checkRange(randomNumber, 28, 37)){ // 15.4% probability
 				betLine[spin] = "Grapes";
 				grapes++;
 			}
-			else if (checkRange(outCome[spin], 38, 46)){ // 13.8% probability
+			else if (checkRange(randomNumber, 38, 46)){ // 13.8% probability
 				betLine[spin] = "Banana";
 				bananas++;
 			}
-			else if (checkRange(outCome[spin], 47, 54)){ // 12.3% probability
+			else if (checkRange(randomNumber, 47, 54)){ // 12.3% probability
 				betLine[spin] = "Orange";
 				oranges++;
 			}
-			else if (checkRange(outCome[spin], 55, 59)){ //  7.7% probability
+			else if (checkRange(randomNumber, 55, 59)){ //  7.7% probability
 				betLine[spin] = "Cherry";
 				cherries++;
 			}
-			else if (checkRange(outCome[spin], 60, 62)){ //  4.6% probability
+			else if (checkRange(randomNumber, 60, 62)){ //  4.6% probability
 				betLine[spin] = "Bar";
 				bars++;
 			}
-			else if (checkRange(outCome[spin], 63, 64)){ //  3.1% probability
+			else if (checkRange(randomNumber, 63, 64)){ //  3.1% probability
 				betLine[spin] = "Bell";
 				bells++;
 			}
-			else if (checkRange(outCome[spin], 65, 65)){ //  1.5% probability
+			else if (checkRange(randomNumber, 65, 65)){ //  1.5% probability
 				betLine[spin] = "Seven";
 				sevens++;
 			}
