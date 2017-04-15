@@ -3,30 +3,46 @@ using UnityEngine.UI;
 using UnityEditor;
 using System.Collections;
 using System.Linq;
-
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+///<summary>
+/// Georgian College - Computer Programmer
+/// COMP 1004 - Rapid Application Development
+/// Instructor: Tom Tsiliopoulos
+/// 
+/// Assignment 5: A slot machine game
+/// 
+/// BONUS: Sound effects
+/// 
+/// Author Name: Pranav Kural
+/// Student Number: 200333253
+/// 
+/// Last modified: April 14, 2017
+/// 
+/// Brief revision history:
+/// Initial commit to add default .gitIgnore and .gitAttribute files.
+/// .....
+/// Added the sound effects
+/// Improved the logic execution and application flow
+/// 
+/// </summary>
 
 public class SlotMachine : MonoBehaviour {
 
-
-    string[] fruitsToDisplay = new string[3];
-    private int playerMoney = 1000;
-    private int winnings = 0;
-    private int jackpot = 5000;
-    private float turn = 0.0f;
-    private int playerBet = 10;
-    private float winNumber = 0.0f;
-    private float lossNumber = 0.0f;
-    private string[] spinResult;
-    private string fruits = "";
-    private float winRatio = 0.0f;
-    private float lossRatio = 0.0f;
-    
+    // Class variables
+    string[] itemsToDisplay = new string[3];    // Items to be diplayed on slot machine after spin
+    private int _playerMoney = 1000;            // Total player money; Initial $1000
+    private int _winnings = 0;                  // Winning amount
+    private int _jackpot = 5000;                // jackpot amount; Initial $5000
+    private float _turn = 0.0f;                 // Player turns
+    private int _playerBet = 10;                // Player bet amount; Initial $10
+    private float _winNumber = 0.0f;            // Number of wins
+    private float _lossNumber = 0.0f;           // Number of losses
+   
 
     // Logic to run before the start of the game
-    void Start () {
-       
-    }
+    void Start () {}
 	
     // adding and attaching the GUI components and class properties
     void OnGUI()
@@ -35,65 +51,69 @@ public class SlotMachine : MonoBehaviour {
         _PictureBoxes();
         // Setting the value of Total credits = playerMoney
         // also attaching it to this GUI componenent making it reactive, i.e., any changes to the property value will automatically be updated on the view
-        GameObject.Find("TotalCredits").GetComponent<Text>().text = "$" + playerMoney;
+        GameObject.Find("TotalCredits").GetComponent<Text>().text = "$" + _playerMoney;
 
         // Displaying the bet amount set
-        GameObject.Find("BetAmount").GetComponent<Text>().text = "$" + playerBet;
+        GameObject.Find("BetAmount").GetComponent<Text>().text = "$" + _playerBet;
     }
     
     // Creating the three picture holding boxes showing the spin result
     void _PictureBoxes()
     {
         // First box
-        GUI.Box(new Rect(Screen.width - 740, Screen.height - 400, 125, 105), Resources.Load((fruitsToDisplay[0] == null) ? "banana" : fruitsToDisplay[0]) as Texture2D);
+        GUI.Box(new Rect(Screen.width - 740, Screen.height - 400, 125, 105), Resources.Load((itemsToDisplay[0] == null) ? "banana" : itemsToDisplay[0]) as Texture2D);
 
         // Second box
-        GUI.Box(new Rect(Screen.width - 575, Screen.height - 400, 125, 105), Resources.Load((fruitsToDisplay[1] == null) ? "cherry" : fruitsToDisplay[1]) as Texture2D);
+        GUI.Box(new Rect(Screen.width - 575, Screen.height - 400, 125, 105), Resources.Load((itemsToDisplay[1] == null) ? "cherry" : itemsToDisplay[1]) as Texture2D);
 
         // Third box ( Right most)
-        GUI.Box(new Rect(Screen.width - 410, Screen.height - 400, 125, 105), Resources.Load((fruitsToDisplay[2] == null) ? "grapes" : fruitsToDisplay[2]) as Texture2D);
+        GUI.Box(new Rect(Screen.width - 410, Screen.height - 400, 125, 105), Resources.Load((itemsToDisplay[2] == null) ? "grapes" : itemsToDisplay[2]) as Texture2D);
     }
 
 	/* Utility function to show Player Stats */
 	private void showPlayerStats()
 	{
-		winRatio = winNumber / turn;
-		lossRatio = lossNumber / turn;
+         float _winRatio = 0.0f;             // Ratio of winning
+         float _lossRatio = 0.0f;            // Ratio of lossing
+
+        // Calculate stats
+        _winRatio = _winNumber / _turn;
+		_lossRatio = _lossNumber / _turn;
 		string stats = "";
-		stats += ("Jackpot: " + jackpot + "\n");
-		stats += ("Player Money: " + playerMoney + "\n");
-		stats += ("Turn: " + turn + "\n");
-		stats += ("Wins: " + winNumber + "\n");
-		stats += ("Losses: " + lossNumber + "\n");
-		stats += ("Win Ratio: " + (winRatio * 100) + "%\n");
-		stats += ("Loss Ratio: " + (lossRatio * 100) + "%\n");
+		stats += ("Jackpot: " + _jackpot + "\n");
+		stats += ("Player Money: " + _playerMoney + "\n");
+		stats += ("Turn: " + _turn + "\n");
+		stats += ("Wins: " + _winNumber + "\n");
+		stats += ("Losses: " + _lossNumber + "\n");
+		stats += ("Win Ratio: " + (_winRatio * 100) + "%\n");
+		stats += ("Loss Ratio: " + (_lossRatio * 100) + "%\n");
+
+        // Display a message box with stats
         EditorUtility.DisplayDialog("Player Stats", "Statistics from last play \n" + stats, "OK");
 	}
 
 	/* Utility function to reset the player stats */
 	public void resetAll()
 	{
-		playerMoney = 1000;
-		winnings = 0;
-		jackpot = 5000;
-		turn = 0;
-		playerBet = 10; // default amount
-		winNumber = 0;
-		lossNumber = 0;
-		winRatio = 0.0f;
+        // reset the properties to initial values
+		_playerMoney = 1000;    // initial amount of $1000
+		_winnings = 0;
+		_jackpot = 5000;        // initial amount of $5000
+        _turn = 0;
+		_playerBet = 10;        // initial amount of $10
+        _winNumber = 0;
+		_lossNumber = 0;
+        // reset the display of spin result and win amount
 		GameObject.Find("SpinResult").GetComponent<Text>().text = "      Spin It!";
-        GameObject.Find("WinAmount").GetComponent<Text>().text = "";
-        Debug.Log("Resetted all values");
+        GameObject.Find("WinAmount").GetComponent<Text>().text = "$0";
 	}
 
 
 	/* Utility function to show a win message and increase player money */
 	private void showWinMessage()
 	{
-		playerMoney += winnings;
-        GameObject.Find("SpinResult").GetComponent<Text>().text = "You Won: $" + winnings;
-        Debug.Log("You Won: $" + winnings);
-        GameObject.Find("WinAmount").GetComponent<Text>().text = "$" + winnings;
+        // Add the win amount to player's money
+		_playerMoney += _winnings;
 
         /* Check to see if the player won the jackpot */
 
@@ -102,14 +122,18 @@ public class SlotMachine : MonoBehaviour {
         var jackPotWin = Random.Range(1, 51);
         if (jackPotTry == jackPotWin)
         {
-            EditorUtility.DisplayDialog("Jackpot!", "You Won the $" + jackpot + " Jackpot!!", "OK");
-            Debug.Log("You Won the $" + jackpot + " Jackpot!!");
-            playerMoney += jackpot;
-            jackpot = 1000;
-            GameObject.Find("WinAmount").GetComponent<Text>().text = "$" + winnings + jackpot;
+            // Display the jackpot winning message
+            EditorUtility.DisplayDialog("Jackpot!", "You Won the $" + _jackpot + " Jackpot!!", "OK");
+            _playerMoney += _jackpot;
+            _jackpot = 1000; // jackpot amount after one jackpot has been won
+            // Display the win amount + jackpot
+            GameObject.Find("WinAmount").GetComponent<Text>().text = "$" + _winnings + _jackpot;
+            GameObject.Find("SpinResult").GetComponent<Text>().text = "You Won: $" + _winnings + _jackpot;
         } else
         {
-            GameObject.Find("WinAmount").GetComponent<Text>().text = "$" + winnings;
+            // Dsiplay the win amount
+            GameObject.Find("WinAmount").GetComponent<Text>().text = "$" + _winnings;
+            GameObject.Find("SpinResult").GetComponent<Text>().text = "You Won: $" + _winnings;
         }
         
         // Play the winning sound effect
@@ -119,63 +143,61 @@ public class SlotMachine : MonoBehaviour {
 	/* Utility function to show a loss message and reduce player money */
 	private void showLossMessage()
 	{
-		playerMoney -= playerBet;
+        // reduce the player money by the bet amount
+		_playerMoney -= _playerBet;
+        // Display the loss message
         GameObject.Find("SpinResult").GetComponent<Text>().text = "      You Lost!";
-        Debug.Log("You Lost!");
+        // Clear the win amount
         GameObject.Find("WinAmount").GetComponent<Text>().text = "$0";
 
         // Play the loosing sound effect
         GameObject.Find("LossAudio").GetComponent<AudioSource>().Play();
 	}
 
-	/* Utility function to check if a value falls within a range of bounds */
-	private bool checkRange(int value, int lowerBounds, int upperBounds)
-	{
-		return (value >= lowerBounds && value <= upperBounds) ? true : false;
-
-	}
-
-	/* When this function is called it determines the betLine results.
-    e.g. Bar - Orange - Banana */
+	// Method to determine the betLine results
+    // e.g. Bar - Orange - Banana */
 	private string[] Reels()
 	{
+        // array to store the spin results
 		string[] spinResult = { " ", " ", " " };
 
+        // Spin 3 times
 		for (var spin = 0; spin < 3; spin++)
 		{
 			int randomNumber = Random.Range(1,65);
 
-			if (checkRange(randomNumber, 1, 27)) {  // 41.5% probability
+			if (randomNumber <= 27) {  // 41.5% probability
 				spinResult[spin] = "blank";
 			}
-			else if (checkRange(randomNumber, 28, 37)){ // 15.4% probability
+			else if (randomNumber >= 28 && randomNumber <= 37) { // 15.4% probability
 				spinResult[spin] = "Grapes";
 			}
-			else if (checkRange(randomNumber, 38, 46)){ // 13.8% probability
+			else if (randomNumber >= 38 && randomNumber <= 46){ // 13.8% probability
 				spinResult[spin] = "Banana";
 			}
-			else if (checkRange(randomNumber, 47, 54)){ // 12.3% probability
+			else if (randomNumber >= 47 && randomNumber <= 54){ // 12.3% probability
 				spinResult[spin] = "Orange";
 			}
-			else if (checkRange(randomNumber, 55, 59)){ //  7.7% probability
+			else if (randomNumber >= 55 && randomNumber <= 59){ //  7.7% probability
 				spinResult[spin] = "Cherry";
 			}
-			else if (checkRange(randomNumber, 60, 62)){ //  4.6% probability
+			else if (randomNumber >= 60 && randomNumber <= 62){ //  4.6% probability
 				spinResult[spin] = "Bar";
 			}
-			else if (checkRange(randomNumber, 63, 64)){ //  3.1% probability
+			else if (randomNumber >= 63 && randomNumber <= 64){ //  3.1% probability
 				spinResult[spin] = "Bell";
 			}
-			else if (checkRange(randomNumber, 65, 65)){ //  1.5% probability
+			else if (randomNumber == 65) { //  1.5% probability
 				spinResult[spin] = "Seven";
 			}
-
 		}
-        this.fruitsToDisplay = spinResult;
+        // Set the spin results to the fruitsToDisplay, which will automatically update the view
+        this.itemsToDisplay = spinResult;
+        // return the spin Results
 		return spinResult;
 	}
 
-	/* This function calculates the player's winnings, if any */
+	// Determine if the user Won or Lost and calculate winnings if any
 	private void _determineResult(string[] spinResult)
 	{
         // Dictionary to contain the fruits that came on spin and their frequency in this spin
@@ -199,13 +221,15 @@ public class SlotMachine : MonoBehaviour {
         // If the SpinResults contain a blank
         if (SpinResults.ContainsKey("blank"))
         {
-            lossNumber++;
+            // increment the number of losses
+            _lossNumber++;
+            // display the loss message
             showLossMessage();
         }
         else
         {
             // factor by which the playerBet will be multiplied
-            int factor = 0;
+            int factor = 1;
 
             if (SpinResults.ContainsValue(3) && SpinResults.Count == 1)
             {
@@ -229,8 +253,6 @@ public class SlotMachine : MonoBehaviour {
                 string item = SpinResults.FirstOrDefault(x => x.Value == 2).Key;
                 switch (item)
                 {
-                    case "grapes": 
-                    case "banana": factor = 1; break;
                     case "oranges": factor = 3; break;
                     case "cherry": factor = 4; break;
                     case "bars": factor = 5; break;
@@ -246,57 +268,60 @@ public class SlotMachine : MonoBehaviour {
             }
 
             // set the winning amount
-            winnings = playerBet * factor;
+            _winnings = _playerBet * factor;
             // Update the win number
-            winNumber++;
+            _winNumber++;
             // Display win message
             showWinMessage();
         }
 	}
 
+    // Spin Button click event handler
 	public void OnSpinButtonClick()
 	{
-
-		if (playerMoney == 0)
+        // if player has no money left
+		if (_playerMoney == 0)
 		{
+            // Display a message to inform the player he ran out of money
             if (EditorUtility.DisplayDialog("Out of Money", "You ran out of Money! Do you want to play again?", "Yes", "No"))
             {
-                resetAll();
+                // Reset the game if user chose yes
+                resetAll(); // resets the playerMoney too
+
+                // Display the player the stats of last play
                 showPlayerStats();
             }
             
         }
-		else if (playerBet > playerMoney)
+		else if (_playerBet > _playerMoney)
 		{
+            // Display a message for insufficient balance to play the bet
             EditorUtility.DisplayDialog("Not Enough Money","You don't have enough Money to place that bet.", "OK");
 		}
-		else if (playerBet < 0)
-		{
-            EditorUtility.DisplayDialog("Invalid Bet Amount","All bets must be a positive $ amount.", "OK");
-		}
-		else if (playerBet <= playerMoney)
+		else if (_playerBet <= _playerMoney)
 		{
             // Call the Reel method to make the spin
-			spinResult = Reels();
+			string[] _spinResult = Reels();
             // pass the spin result obtained from Reel method to _determineResult Method
-            _determineResult(spinResult);
-            turn++; // increment the turn number
-		}
-		else
-		{
-            EditorUtility.DisplayDialog("Invalid Bet Amount","Please enter a valid bet amount", "OK");
+            _determineResult(_spinResult);
+            _turn++; // increment the turn number
 		}
 	}
 
+    // Set the player bet amount
     public void Bet(int betAmount)
     {
-        // bet amount logic
+        // if the bet amount is valid and greater than zero
         if (betAmount > 0)
         {
-            this.playerBet = betAmount;
+            // set the new player amount
+            this._playerBet = betAmount;
+            // This automatically updates the amount shown on view
+            // don't have to be set again to the GUI component
         }
     }
 
+    // Quit button click event handler
     public void QuitGame()
     {
         // Quit the application
